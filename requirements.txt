@@ -1,6 +1,6 @@
 pandas
 scikit-learn
-opencv-python-headless
+opencv-python-contrib-headless
 requests
 pytesseract
 easyocr
