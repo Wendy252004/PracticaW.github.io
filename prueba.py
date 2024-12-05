@@ -117,7 +117,7 @@ col1, col2, col3 = st.columns(3)
 # Columna de captura de imagen
 with col1:
     st.header("Captura de Imagen desde la Cámara")
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         st.error("⚠️ No se pudo acceder a la cámara. Asegúrate de que está conectada y autorizada.")
     else:
