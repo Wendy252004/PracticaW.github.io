@@ -58,6 +58,11 @@ placa = "ABC-123-A"
 estado = identificar_estado(placa)
 print(f"La placa pertenece a: {estado}")
 
+# Configuración del tamaño del kernel para la erosión
+st.sidebar.header("Ajustes de Detección")
+kernel_size = st.sidebar.slider("Tamaño del kernel (para erosión)", 1, 10, 2)  # Valor por defecto: 2
+iterations = st.sidebar.slider("Número de iteraciones (erosión)", 1, 5, 1)      # Valor por defecto: 1
+
 def procesar_imagen_placa(frame):
     """Procesa el frame de la cámara para detectar placas."""
     # Convertir a escala de grises
@@ -70,8 +75,11 @@ def procesar_imagen_placa(frame):
     _, binary = cv2.threshold(blurred, 127, 255, cv2.THRESH_BINARY)
 
     # Aplicar erosión para resaltar caracteres
-    kernel = np.ones((2, 2), np.uint8)  # Tamaño del kernel ajustable
-    eroded = cv2.erode(binary, kernel, iterations=1)
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)  # Kernel dinámico basado en el usuario
+    eroded = cv2.erode(binary, kernel, iterations=iterations)
+
+    # Mostrar imagen erosionada para visualización
+    st.image(eroded, caption="Imagen tras aplicar erosión", use_column_width=True, channels="GRAY")
 
     # Procesar con EasyOCR
     resultados_ocr = reader.readtext(eroded, detail=1)
@@ -117,7 +125,7 @@ col1, col2, col3 = st.columns(3)
 # Columna de captura de imagen
 with col1:
     st.header("Captura de Imagen desde la Cámara")
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         st.error("⚠️ No se pudo acceder a la cámara. Asegúrate de que está conectada y autorizada.")
     else:
@@ -163,7 +171,7 @@ if uploaded_file is not None:
 # Columna de vista en vivo
 with col3:
     st.header("Vista en Vivo de la Cámara")
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     if cap.isOpened():
         ret, frame = cap.read()
         if ret:
@@ -172,4 +180,3 @@ with col3:
         else:
             st.warning("⚠️ No se pudo capturar el flujo de video.")
     cap.release()
-
